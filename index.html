@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Influential Users</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+  <!-- navigation bar -->
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <a class="navbar-brand">
+        <i class="glyphicon glyphicon-bullhorn"></i>
+        Influential Users
+      </a>
+    </div>
+  </nav>
+
+  <!-- main body of our application -->
+  <div class="container" id="influence">
+
+    <!-- brands list -->
+    <div class="col-sm-6">
+      <h3>Brands</h3>
+      <ul id="brands">
+        <li v-for="brand in brands" :class="{ active: brand.active }" @click="toggleActive(brand)">
+          {{ brand.name }} ({{ numberOfInteractions({ brand: brand.id }) }})
+        </li>
+      </ul>
+    </div>
+
+    <!-- influence rank -->
+    <div class="col-sm-6">
+      <h3>Interactions ({{ totalInteractions }})</h3>
+      <ul id="types">
+        <li v-for="type in typesOfInteraction" :class="{ active: type.active }" @click="toggleActive(type)">
+          {{ type.name }} ({{ numberOfInteractions({ type: type.id }) }})
+        </li>
+      </ul>
+      <h3>Actions</h3>
+      <ul>
+        <li>
+          Sort [
+            <span :class="{ active: (userOrder.orderBy == 'totalInteractions') }" @click="sortUsersBy('totalInteractions', 'desc')">Influence</span> |
+            <span :class="{ active: (userOrder.orderBy == 'name.first') }" @click="sortUsersBy('name.first', 'asc')">Name</span> |
+            <span :class="{ active: (userOrder.orderBy == 'registered' && userOrder.order == 'asc') }" @click="sortUsersBy('registered', 'asc')">Old Users</span> |
+            <span :class="{ active: (userOrder.orderBy == 'registered' && userOrder.order == 'desc') }" @click="sortUsersBy('registered', 'desc')">New Users </span>
+          ]
+        </li>
+        <li>
+          Filter [
+            <span :class="{ active: userFilters.ageGroup.tens }" @click="toggleFilter('ageGroup', 'tens')">Tens</span> |
+            <span :class="{ active: userFilters.ageGroup.adults }" @click="toggleFilter('ageGroup', 'adults')">Adults</span> |
+            <span :class="{ active: userFilters.gender.male }" @click="toggleFilter('gender', 'male')">Men</span> |
+            <span :class="{ active: userFilters.gender.female }" @click="toggleFilter('gender', 'female')">Women</span>
+          ]
+        </li>
+        <li @click="exportsAsCSV()">
+          Exports as CSV
+        </li>
+      </ul>
+      <h3>Users ({{ totalUsers }})</h3>
+      <ul id="users">
+        <li v-for="user in influentialUsers">
+          {{ user.fullName }} [
+            <span v-for="type in typesOfInteraction" :class="lowercase(type.id)" :style="{ width: percentageOfInteraction(user, type) }">
+              {{ numberOfInteractions({ user: user.id, type: type.id }) }}
+            </span>
+          ] {{ percentageOfInfluence(user) }} ({{ numberOfInteractions({ user: user.id }) }})
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="node_modules/vue/dist/vue.js"></script>
+  <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
+  <script src="node_modules/lodash/lodash.js"></script>
+  <script src="node_modules/json2csv/dist/json2csv.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
