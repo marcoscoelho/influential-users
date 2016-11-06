@@ -19,6 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "easy-pie-chart": "^2.1.7",
+    "font-awesome": "^4.7.0",
     "json2csv": "^3.7.1",
     "lodash": "^4.16.6",
     "vue": "^2.0.3",

@@ -1,8 +1,9 @@
 // helper functions
 
-function percentage (total, value) {
+function percentage (total, value, sign) {
+  sign = (typeof sign == 'boolean') ? sign : true;
   result = (total != 0 ? ((value/total)*100) : 0);
-  return _.round(result, 2)+'%';
+  return _.round(result, 2)+(sign ? '%' : '');
 }
 
 function age(dob) {
@@ -18,7 +19,7 @@ function age(dob) {
 
 var API_ENDPOINT = 'https://raw.githubusercontent.com/alexandre-gauge/frontend_data/master{/resource}';
 var influence = new Vue({
-  el: '#influence',
+  el: '#influential-rank',
   data: {
     userOrder: {
       orderBy: 'totalInteractions',
@@ -90,6 +91,9 @@ var influence = new Vue({
     this.fetchData('interactions');
     this.fetchData('users');
   },
+  beforeMounted: function () {
+    this.drawChats();
+  },
   methods: {
     fetchData: function (resource) {
       this.$resource(API_ENDPOINT)
@@ -144,6 +148,24 @@ var influence = new Vue({
         return result;
       }, []), 'name');
     },
+    drawChats: function () {
+      var self = this;
+      this.typesOfInteraction.forEach(function (type, index) {
+        var element = document.getElementById('chart-'+self.lowercase(type.id));
+console.log(element);
+        return;
+          var chart = new EasyPieChart(element, {
+          barColor: function(percent) {
+            var ctx = this.renderer.ctx();
+            var canvas = this.renderer.canvas();
+            var gradient = ctx.createLinearGradient(0,0,canvas.width,0);
+                gradient.addColorStop(0, "#ffe57e");
+                gradient.addColorStop(1, "#de5900");
+            return gradient;
+          }
+        });
+      });
+    },
     checkFilter: function (name, filter) {
       return this.userFilters[name][filter];
     },
@@ -160,11 +182,16 @@ var influence = new Vue({
     numberOfInteractions: function (matches) {
       return _.filter(this.filteredInteractions, matches).length;
     },
-    percentageOfInteraction: function (user, type) {
-      return percentage(
-        this.numberOfInteractions({ user: user.id }),
-        this.numberOfInteractions({ user: user.id, type: type.id })
-      );
+    percentageOfInteraction: function (type, user, sign) {
+      var total, value;
+      if (user) {
+        total = this.numberOfInteractions({ user: user.id });
+        value = this.numberOfInteractions({ type: type.id, user: user.id });
+      } else {
+        total = this.totalInteractions
+        value = this.numberOfInteractions({ type: type.id });
+      }
+      return percentage(total, value, sign);
     },
     percentageOfInfluence: function (user) {
       return percentage(

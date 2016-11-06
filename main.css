@@ -1,0 +1,66 @@
+body {
+	background: url("img/hexellence.png") repeat center top;
+	font-family: 'Josefin Sans', sans-serif;
+
+}
+
+.navbar-default {
+	padding: 30px 0;
+	margin: 0;
+	background-color: #0E060C;
+	color: #fff;
+}
+.navbar-default .navbar-brand {
+	line-height: 30px;
+	font-size: 28px;
+	height: auto;
+	color: #FEFCFF;
+}
+.navbar-default .navbar-brand:hover {
+	color: #fff;
+}
+
+#influential-rank {
+	background-color: #fff;
+}
+
+.brand-list {
+}
+.brand-list > li {
+	margin: 0;
+}
+.brand-list > li + li {
+	margin-top: 10px;
+}
+.brand-link {
+	width: 100%;
+	display: inline-block;
+	text-transform: uppercase;
+	line-height: 30px;
+	padding: 6px 20px;
+	background-color: #f9f9f9;
+	border: 1px solid #f0f0f0;
+}
+.brand-link,
+.brand-link:hover,
+.brand-link:focus {
+	color: #ddd;
+	text-decoration: none;
+}
+.brand-link img {
+	opacity: .3;
+}
+.brand-link.active:hover
+.brand-link.active:focus,
+.brand-link.active {
+	color: #000;
+	border-color: #000;
+}
+.brand-link.active .brand-img {
+	opacity: 1;
+}
+.brand-img {
+	width: 25px;
+	height: auto;
+	margin-right: 10px;
+}
