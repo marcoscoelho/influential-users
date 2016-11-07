@@ -1,7 +1,7 @@
 body {
 	background: url("img/hexellence.png") repeat center top;
 	font-family: 'Josefin Sans', sans-serif;
-
+	min-width: 720px;
 }
 
 .navbar-default {
