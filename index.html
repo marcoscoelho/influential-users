@@ -24,74 +24,132 @@
 
   <!-- main body of our application -->
   <div class="container" id="influential-rank">
+    <div class="row">
+      <div class="col-sm-12">
+        <h3>Interactions Overview</h3>
+        <p>Summary of interations by types (filtered)</p>
+        <ul class="list-inline" id="types">
+          <li v-for="type in typesOfInteraction">
 
-    <!-- brands list -->
-    <div class="brands-wrap col-sm-4">
-      <h3>Brands</h3>
-      <ul class="brand-list list-unstyled" id="brands">
-        <li class="brand-item" v-for="brand in brands">
-          <a class="brand-link" href="javascript:void(0);"
-             v-bind:class="{ active: brand.active }"
-             v-bind:title="'Clicking here ' + numberOfInteractions({ brand: brand.id }) + ' interactions from this brand will be ' + (brand.active ? 'disable.' : 'enable.')"
-             v-on:click="toggleActive(brand)">
-            <img class="brand-img" v-bind:src="brand.image" v-bind:alt="brand.name">
-            <span>{{ brand.name }}</span>
-          </a>
-        </li>
-      </ul>
+            <div class="chart-wrap"
+               v-bind:id="'chart-'+lowercase(type.id)"
+               v-bind:class="{ active: type.active }"
+               v-bind:title="'Clicking here ' + numberOfInteractions({ type: type.id }) + ' interactions from this type will be ' + (type.active ? 'disable.' : 'enable.')"
+               >
+              <span class="chart" v-bind:data-percent="percentageOfInteraction(type, null, false)">
+                <span class="percent"></span>
+              </span>
+              <span class="title" v-on:click="toggleActive(type)">{{ numberOfInteractions({ type: type.id }) }} {{ type.name }}s</span>
+            </div>
+
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <!-- users list -->
-    <div class="users-wrap col-sm-8">
-      <h3>Interactions ({{ totalInteractions }})</h3>
-      <ul id="types">
-        <li v-for="type in typesOfInteraction">
+    <div class="row">
+      <!-- brands list -->
+      <div class="brands-wrap col-sm-4">
+        <h3>Brands</h3>
+        <p>Filter by brand need only a click</p>
+        <ul class="brand-list list-unstyled" id="brands">
+          <li class="brand-item" v-for="brand in brands">
+            <a class="brand-link" href="javascript:void(0);"
+               v-bind:class="{ active: brand.active }"
+               v-bind:title="'Clicking here ' + numberOfInteractions({ brand: brand.id }) + ' interactions from this brand will be ' + (brand.active ? 'disable.' : 'enable.')"
+               v-on:click="toggleActive(brand)">
+              <img class="brand-img" v-bind:src="brand.image" v-bind:alt="brand.name">
+              <span>{{ brand.name }}</span>
 
-          <div class="chart"
-             v-bind:id="'chart-'+lowercase(type.id)"
-             v-bind:class="{ active: type.active }"
-             v-bind:title="'Clicking here ' + numberOfInteractions({ type: type.id }) + ' interactions from this type will be ' + (type.active ? 'disable.' : 'enable.')"
-             v-on:click="toggleActive(type)">
-            <div class="percentage" v-bind:data-percent="percentageOfInteraction(type, null, false)">
-              <span>{{ percentageOfInteraction(type, null, false) }}</span><sup>%</sup>
-            </div>
-            <div class="label">{{ type.name }}</div>
-          </div>
-
-        </li>
-      </ul>
-      <h3>Actions</h3>
-      <ul>
-        <li>
-          Sort [
-            <span v-bind:class="{ active: (userOrder.orderBy == 'totalInteractions') }" v-on:click="sortUsersBy('totalInteractions', 'desc')">Influence</span> |
-            <span v-bind:class="{ active: (userOrder.orderBy == 'name.first') }" v-on:click="sortUsersBy('name.first', 'asc')">Name</span> |
-            <span v-bind:class="{ active: (userOrder.orderBy == 'registered' && userOrder.order == 'asc') }" v-on:click="sortUsersBy('registered', 'asc')">Old Users</span> |
-            <span v-bind:class="{ active: (userOrder.orderBy == 'registered' && userOrder.order == 'desc') }" v-on:click="sortUsersBy('registered', 'desc')">New Users </span>
-          ]
-        </li>
-        <li>
-          Filter [
-            <span v-bind:class="{ active: userFilters.ageGroup.tens }" v-on:click="toggleFilter('ageGroup', 'tens')">Tens</span> |
-            <span v-bind:class="{ active: userFilters.ageGroup.adults }" v-on:click="toggleFilter('ageGroup', 'adults')">Adults</span> |
-            <span v-bind:class="{ active: userFilters.gender.male }" v-on:click="toggleFilter('gender', 'male')">Men</span> |
-            <span v-bind:class="{ active: userFilters.gender.female }" v-on:click="toggleFilter('gender', 'female')">Women</span>
-          ]
-        </li>
-        <li v-if="totalInteractions > 0" v-on:click="exportsAsCSV()">
-          Exports as CSV
-        </li>
-      </ul>
-      <h3>Users ({{ totalUsers }})</h3>
-      <ul id="users">
-        <li v-for="user in influentialUsers">
-          {{ user.fullName }} [
-            <span v-for="type in typesOfInteraction" v-bind:class="lowercase(type.id)" v-bind:style="{ width: percentageOfInteraction(type, user) }">
-              {{ numberOfInteractions({ user: user.id, type: type.id }) }}
-            </span>
-          ] {{ percentageOfInfluence(user) }} ({{ numberOfInteractions({ user: user.id }) }})
-        </li>
-      </ul>
+              <i class="fa" v-bind:class="[ brand.active ? 'fa-toggle-on' : 'fa-toggle-off' ]" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- users list -->
+      <div class="users-wrap col-sm-8">
+        <h3>Users Ranking</h3>
+        <p>Base on <a href="https://github.com/alexandre-gauge/frontend_data/blob/master/interactions.json">alexandre's frontend data</a> at GitHub</p>
+        <div class="well well-sm listing-tools">
+          <ul class="list-inline">
+            <li>
+              <i title="sorting by" class="fa fa-sort" aria-hidden="true"></i>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ (userOrder.orderBy == 'totalInteractions') ? 'btn-primary' : 'btn-default' ]"
+                    v-on:click="sortUsersBy('totalInteractions', 'desc')">Influence</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ (userOrder.orderBy == 'name.first') ? 'btn-primary' : 'btn-default' ]"
+                    v-on:click="sortUsersBy('name.first', 'asc')">Name</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ (userOrder.orderBy == 'registered' && userOrder.order == 'asc') ? 'btn-primary' : 'btn-default' ]"
+                    v-on:click="sortUsersBy('registered', 'asc')">Old Users</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ (userOrder.orderBy == 'registered' && userOrder.order == 'desc') ? 'btn-primary' : 'btn-default' ]"
+                    v-on:click="sortUsersBy('registered', 'desc')">New Users </a>
+            </li>
+            <li>
+              <i title="filtering by" class="fa fa-filter" aria-hidden="true"></i>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ userFilters.ageGroup.tens ? 'btn-success' : 'btn-danger' ]"
+                    v-on:click="toggleFilter('ageGroup', 'tens')">Tens (0-18)</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ userFilters.ageGroup.adults ? 'btn-success' : 'btn-danger' ]"
+                    v-on:click="toggleFilter('ageGroup', 'adults')">Adults (>18)</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ userFilters.gender.male ? 'btn-success' : 'btn-danger' ]"
+                    v-on:click="toggleFilter('gender', 'male')">Men</a>
+              <a href="javascript:void(0);" class="btn btn-xs"
+                    v-bind:class="[ userFilters.gender.female ? 'btn-success' : 'btn-danger' ]"
+                    v-on:click="toggleFilter('gender', 'female')">Women</a>
+            </li>
+            <li v-if="totalInteractions > 0">
+              <i title="exports as..." class="fa fa-download" aria-hidden="true"></i>
+              <a class="btn btn-default btn-xs" href="javascript:void(0);" title="influential-users.csv"
+                v-on:click="exportsAsCSV()">
+                <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                 CSV
+              </a>
+              <a class="btn btn-default btn-xs" href="javascript:void(0);" title="influential-users.json"
+                v-on:click="exportsAsJSON()">
+                <i class="fa fa-file-code-o" aria-hidden="true"></i>
+                 JSON
+              </a>
+            </li>
+          </ul>
+        </div>
+        <table id="users" class="table table-hover">
+          <thead>
+            <tr>
+              <th width="30" class="text-center">#ID</th>
+              <th>Name</th>
+              <th width="30%" class="text-center">Interactions</th>
+              <th width="150" class="text-center">Influence (Interactions)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="user-row" v-for="user in influentialUsers">
+              <td class="text-center">{{ user.id }}</td>
+              <td>
+                {{ user.fullName }}
+                <img class="img-circle" v-bind:src="user.picture.thumbnail">
+              </td>
+              <td class="text-center">
+              <div class="interactions-bar list-inline">
+                <span v-for="type in typesOfInteraction"
+                      v-bind:class="lowercase(type.id)"
+                      v-bind:style="{ width: percentageOfInteraction(type, user) }">
+                  {{ numberOfInteractions({ user: user.id, type: type.id }) }}
+                </span>
+              </div>
+              </td>
+              <td class="text-center">
+                {{ percentageOfInfluence(user) }}
+                ({{ numberOfInteractions({ user: user.id }) }})
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

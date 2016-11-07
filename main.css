@@ -11,8 +11,8 @@ body {
 	color: #fff;
 }
 .navbar-default .navbar-brand {
-	line-height: 30px;
-	font-size: 28px;
+	line-height: 1em;
+	font-size: 2em;
 	height: auto;
 	color: #FEFCFF;
 }
@@ -30,31 +30,39 @@ body {
 	margin: 0;
 }
 .brand-list > li + li {
-	margin-top: 10px;
+	margin-top: 20px;
 }
 .brand-link {
 	width: 100%;
 	display: inline-block;
 	text-transform: uppercase;
 	line-height: 30px;
-	padding: 6px 20px;
+	padding: 10px 40px;
 	background-color: #f9f9f9;
-	border: 1px solid #f0f0f0;
+	border: 1px solid #ddd;
+	border-radius: 5px;
 }
 .brand-link,
 .brand-link:hover,
 .brand-link:focus {
-	color: #ddd;
+	color: #ccc;
 	text-decoration: none;
 }
 .brand-link img {
-	opacity: .3;
+	opacity: .4;
 }
 .brand-link.active:hover
 .brand-link.active:focus,
 .brand-link.active {
 	color: #000;
-	border-color: #000;
+	border-color: #449d44;
+}
+.brand-link i {
+	float: right;
+	margin-top: 8px;
+}
+.brand-link.active i {
+	color: #449d44;
 }
 .brand-link.active .brand-img {
 	opacity: 1;
@@ -63,4 +71,91 @@ body {
 	width: 25px;
 	height: auto;
 	margin-right: 10px;
+}
+
+#types { width: 80%; margin: 0 auto; }
+#types li { width: 33%; }
+.chart-wrap {
+  width: 100px;
+  margin: 0 auto;
+}
+.chart {
+  position: relative;
+  display: block;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  // margin-top: 25px;
+  // margin-bottom: 25px;
+  text-align: center;
+}
+.chart canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.chart-wrap .title {
+	width: 100%;
+	margin-top: 10px;
+	display: inline-block;
+	text-align: center;
+	font-size: 1em;
+	color: #999;
+}
+.chart-wrap.active .title {
+	color: inherit;
+}
+.chart .percent {
+  display: inline-block;
+  line-height: 70px;
+  z-index: 2;
+}
+.chart .percent:after {
+  content: '%';
+  margin-left: 0.1em;
+  font-size: .8em;
+}
+
+.user-row .img-circle {
+	width: 20px;
+	float: left;
+	margin-right: 10px;
+}
+
+.interactions-bar {
+	/* height: 10px; */
+	overflow: hidden;
+}
+.interactions-bar span {
+	display: inline-block;
+	/*min-width: 1px;*/
+	height: 20px;
+	margin-right: -1px;
+	text-align: left;
+	text-indent: -999em;
+	color: #fff;
+	border-radius: 4px;
+}/*
+.interactions-bar span + span {
+	border-left: 1px solid #fff;
+}*/
+.interactions-bar .favorite {
+	background-color: #E43D1D;
+}
+.interactions-bar .share {
+	background-color: #217FBE;
+}
+.interactions-bar .comment {
+	background-color: #FF9500;
+}
+
+.listing-tools {
+}
+.listing-tools ul {
+	margin: 0;
+}
+.listing-tools li + li {
+	border-left: 1px solid #ddd;
+	margin-left: 10px;
+	padding-left: 10px;
 }

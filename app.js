@@ -17,6 +17,18 @@ function age(dob) {
     return age;
 }
 
+function exportAs(mimetype, filename, data) {
+  var uri, link;
+  uri = 'data:'+mimetype+';charset=utf-8,' + escape(data);
+  link = document.createElement('a');
+  link.href = uri;
+  link.style = 'visibility:hidden';
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 var API_ENDPOINT = 'https://raw.githubusercontent.com/alexandre-gauge/frontend_data/master{/resource}';
 var influence = new Vue({
   el: '#influential-rank',
@@ -91,9 +103,6 @@ var influence = new Vue({
     this.fetchData('interactions');
     this.fetchData('users');
   },
-  beforeMounted: function () {
-    this.drawChats();
-  },
   methods: {
     fetchData: function (resource) {
       this.$resource(API_ENDPOINT)
@@ -112,6 +121,9 @@ var influence = new Vue({
         data = _.uniqBy(data, 'id');
       } else {
         this.typesOfInteraction = this.extractTypes(data);
+        this.$nextTick(function () {
+          this.drawCharts();
+        });
       }
       return data;
     },
@@ -148,22 +160,45 @@ var influence = new Vue({
         return result;
       }, []), 'name');
     },
-    drawChats: function () {
+    drawCharts: function () {
       var self = this;
       this.typesOfInteraction.forEach(function (type, index) {
-        var element = document.getElementById('chart-'+self.lowercase(type.id));
-console.log(element);
-        return;
-          var chart = new EasyPieChart(element, {
-          barColor: function(percent) {
-            var ctx = this.renderer.ctx();
-            var canvas = this.renderer.canvas();
-            var gradient = ctx.createLinearGradient(0,0,canvas.width,0);
-                gradient.addColorStop(0, "#ffe57e");
-                gradient.addColorStop(1, "#de5900");
-            return gradient;
+        var wrap = document.getElementById('chart-'+self.lowercase(type.id)),
+            element = wrap.getElementsByClassName('chart')[0],
+            color;
+        switch (type.id) {
+          case 'FAVORITE':
+            color = '#E43D1D';
+            break;
+          case 'SHARE':
+            color = '#217FBE';
+            break;
+          case 'COMMENT':
+            color = '#FF9500';
+            break;
+        }
+        type.chart = new EasyPieChart(element, {
+          easing: 'easeOutElastic',
+          delay: 3000,
+          barColor: color,
+          trackColor: '#ccc',
+          scaleColor: false,
+          size: 70,
+          lineWidth: 5,
+          trackWidth: 1,
+          lineCap: 'round',
+          onStep: function(from, to, percent) {
+            this.el.children[0].innerHTML = _.round(percent, 2);
           }
         });
+        self.$watch(
+          function () {
+            return self.percentageOfInteraction(type, null, false);
+          },
+          function (newVal, oldVal) {
+            type.chart.update(newVal);
+          }
+        );
       });
     },
     checkFilter: function (name, filter) {
@@ -203,9 +238,12 @@ console.log(element);
       if (!value) return;
       return _.toLower(value)
     },
+    exportsAsJSON: function () {
+      var dataJSON = JSON.stringify(this.influentialUsers, null, 2);
+      exportAs('application/json', 'influential-users.json', dataJSON);
+    },
     exportsAsCSV: function () {
-      var CSV, uri, link;
-      CSV = json2csv({
+      var dataCSV = json2csv({
         data: this.influentialUsers,
         fields: [
           'id', 'gender', 'name.title', 'name.first', 'name.last', 'email',
@@ -219,14 +257,7 @@ console.log(element);
         ],
         del: ';'
       });
-      uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
-      link = document.createElement('a');
-      link.href = uri;
-      link.style = 'visibility:hidden';
-      link.download = 'influential-users.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      exportAs('text/csv', 'influential-users.csv', dataCSV);
     }
   }
 });
