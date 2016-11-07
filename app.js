@@ -251,7 +251,7 @@ var influence = new Vue({
           'location.street', 'location.postcode', 'totalInteractions'
         ],
         fieldNames: [
-          '#', 'Gender', 'Title', 'First Name', 'Last Name', 'Email', 'Age',
+          '#ID', 'Gender', 'Title', 'First Name', 'Last Name', 'Email', 'Age',
           'Phone Number', 'Cell Number', 'Nat', 'State', 'City', 'Street',
           'Postcode', 'Interactions'
         ],
