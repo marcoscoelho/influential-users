@@ -18,7 +18,7 @@
   "author": "Marcos Coelho",
   "license": "MIT",
   "dependencies": {
-    "bootstrap": "^3.3.7",
+    "bootstrap": ">=4.1.2",
     "easy-pie-chart": "^2.1.7",
     "font-awesome": "^4.7.0",
     "json2csv": "^3.7.1",
